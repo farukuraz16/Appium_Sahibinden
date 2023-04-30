@@ -14,4 +14,8 @@ CategoiresPage categoiresPage = new CategoiresPage(DriverManager.getDriver());
     }
 
 
+    @When("cancel the search with photo")
+    public void cancelTheSearchWithPhoto() {
+        categoiresPage.clickCancel();
+    }
 }

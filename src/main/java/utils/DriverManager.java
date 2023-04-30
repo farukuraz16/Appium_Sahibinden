@@ -1,5 +1,6 @@
 package utils;
 
+import io.appium.java_client.AppiumDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -43,9 +44,11 @@ public class DriverManager {
             case "android":
                 capabilities.setCapability("platformName", "Android");
                 capabilities.setCapability("app", "/Users/faruk/Downloads/com.sahibinden-4.62.0-free-www.apksum.com.apk");
+                capabilities.setCapability("noReset", false);
+              //  capabilities.setCapability("autoGrantPermissions", true);
 
                 try {
-                    driver = new RemoteWebDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+                    driver = new AppiumDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e);
                 }

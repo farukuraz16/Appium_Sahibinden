@@ -3,6 +3,9 @@ package utils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -30,10 +33,23 @@ public class ElementHelper {
     }
 
     public WebElement findElement(By locator) {
-      return  wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+        try {
+            return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+        } catch (Exception e) {
+            return scroll(locator).get(0);
+        }
     }
-public List<WebElement> findElements(By locator) {
-      return  wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));
+
+    /*eski metot
+    public WebElement findElement(By locator) {
+        return  wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+    }*/
+
+
+
+
+    public List<WebElement> findElements(By locator) {
+        return  wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));
     }
 
     public void checkElement(By locator) {
@@ -102,6 +118,10 @@ public List<WebElement> findElements(By locator) {
          */
     }
 
+
+
+
+    /* eski metot...
     public void clickElementWithText(By locator, String text){
         boolean check = false;
         List<WebElement> elementList = findElements(locator);
@@ -114,5 +134,66 @@ public List<WebElement> findElements(By locator) {
         }
 
         Assert.assertTrue(check,"listede element yok!");
+    }
+*/
+    public void clickElementWithText(By locator, String text) {
+        int i = 0;
+        boolean check = false;
+        findElement(locator);
+        while (i < 6) {
+            List<WebElement> elementList = findElements(locator);
+            for (WebElement elem : elementList) {
+                if (elem.getText().equals(text)) {
+                    check = true;
+                    elem.click();
+                    break;
+                }
+            }
+            if (check) {
+                break;
+            } else {
+                scrollDown();
+                i++;
+            }
+        }
+        Assert.assertTrue(check, "Listede istediğin textteki elamanı bulamadım!!!");
+    }
+
+
+
+    public List<WebElement> scroll(By by) {
+        int i = 0;
+        String previusPageSource = ".";
+        while (checkElemenEnabled(by) && i < 5 && checkEndOfPage(previusPageSource)) {
+            i++;
+            previusPageSource = driver.getPageSource();
+            scrollDown();
+        }
+        return driver.findElements(by);
+    }
+    public boolean checkEndOfPage(String previusPageSource) {
+        return !previusPageSource.equals(driver.getPageSource());
+    }
+    public boolean checkElemenEnabled(By by) {
+        return driver.findElements(by).isEmpty();
+    }
+
+
+
+
+
+
+    public void scrollDown() {
+        int startX = driver.manage().window().getSize().getWidth() / 2;
+        int startY = driver.manage().window().getSize().getHeight() / 2;
+        int endx = driver.manage().window().getSize().getWidth() / 2;
+        int endY = (int) (driver.manage().window().getSize().getHeight() * 0.2);
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence scroll = new Sequence(finger, 0);
+        scroll.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, startY));
+        scroll.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        scroll.addAction(finger.createPointerMove(Duration.ofMillis(500), PointerInput.Origin.viewport(), endx, endY));
+        scroll.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        ((RemoteWebDriver) driver).perform(List.of(scroll));
     }
 }

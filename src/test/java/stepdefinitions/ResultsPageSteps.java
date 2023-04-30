@@ -13,4 +13,14 @@ public class ResultsPageSteps {
     public void shouldSeeResultsOnResultPage() {
         resultsPage.checkShareIcon();
     }
+
+    @When("taps {string} at Result Page")
+    public void tapsAtResultPage(String arg0) {
+        resultsPage.clickFilter();
+    }
+
+    @Then("should see the first car price is lower than or equals with {string} at Result Page")
+    public void shouldSeeTheFirstCarPriceIsLowerThanOrEqualsWithAtResultPage(String arg0) {
+    resultsPage.checkMaxArac(arg0);
+    }
 }

@@ -10,6 +10,7 @@ public class CategoiresPage {
     ElementHelper elementHelper;
 
     By tabs = By.id("com.sahibinden:id/util_primary_text");
+    By cancelX = By.id("com.sahibinden:id/anchor_view");
 
     public CategoiresPage(WebDriver driver) {
         this.elementHelper = new ElementHelper(driver);
@@ -22,5 +23,8 @@ public class CategoiresPage {
         elementHelper.clickElementWithText(tabs, tab);
     }
 
+    public void clickCancel(){
+        elementHelper.click(cancelX);
+    }
 
 }
